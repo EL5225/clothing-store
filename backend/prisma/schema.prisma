@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id           String     @id @default(uuid())
+  name         String
+  email        String     @unique
+  password     String
+  avatar       String?
+  phone_number String?    @unique
+  address      String?
+  created_at   DateTime   @default(now())
+  carts        Carts?
+  deliveries   Delivery[]
+}
+
+model Products {
+  id         String             @id @default(uuid())
+  name       String             @unique
+  image      String
+  amount     Int
+  price      Int
+  created_at DateTime           @default(now())
+  carts      ProductsToCarts[]
+  deliveries DeliveryProducts[]
+}
+
+model ProductsToCarts {
+  product     Products @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  product_id  String
+  cart        Carts    @relation(fields: [cart_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  cart_id     String
+  amount      Int
+  total_price Int
+  created_at  DateTime @default(now())
+
+  @@id([product_id, cart_id])
+}
+
+model Carts {
+  id          String            @id @default(uuid())
+  name        String
+  grand_total Int
+  user        Users?            @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user_id     String?           @unique
+  products    ProductsToCarts[]
+}
+
+model DeliveryProducts {
+  id          String     @id @default(uuid())
+  amount      Int
+  total_price Int
+  products    Products[]
+  delivery    Delivery?  @relation(fields: [delivery_id], references: [id])
+  delivery_id String?
+}
+
+model Delivery {
+  id         String             @id @default(uuid())
+  status     Boolean            @default(false)
+  products   DeliveryProducts[]
+  users      Users?             @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user_id    String?
+  created_at DateTime           @default(now())
+}
