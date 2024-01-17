@@ -26,7 +26,7 @@ export const Register = () => {
           onSuccess: () => {
             navigate("/auth/login");
             Swal.fire({
-              title: "Login berhasil",
+              title: "Register berhasil",
               icon: "success",
               showConfirmButton: false,
             });

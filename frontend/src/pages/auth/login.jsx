@@ -26,7 +26,7 @@ export const Login = () => {
           setToken(token);
           navigate("/");
           Swal.fire({
-            title: "Register berhasil",
+            title: "Login berhasil",
             icon: "success",
             showConfirmButton: false,
           });
