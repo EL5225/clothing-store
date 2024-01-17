@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   addToCart,
   checkoutCart,
+  createProduct,
   deleteProductFromCart,
   finishDelivery,
   getCarts,
@@ -84,6 +85,19 @@ export const useFinishDelivery = () => {
     mutationKey: ["finishDelivery"],
     mutationFn: async (delivery_id) => {
       await finishDelivery(delivery_id);
+    },
+  });
+};
+
+export const useCreateProduct = () => {
+  return useMutation({
+    mutationKey: ["createProduct"],
+    mutationFn: async (payload) => {
+      const formData = new FormData();
+      Object.entries(payload).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      await createProduct(formData);
     },
   });
 };

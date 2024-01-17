@@ -6,8 +6,15 @@ import { Error404, LazyLoading, Navbar } from "../components";
 import { GuardAuth, GuardUser } from "./guards";
 import { SearchContextProvider } from "../context/context";
 
-const { Login, Register, LandingPage, ProfilePage, CartPage, DeliveryPage } =
-  lazily(() => import("../pages"));
+const {
+  Login,
+  Register,
+  LandingPage,
+  ProfilePage,
+  CartPage,
+  DeliveryPage,
+  AddProductPage,
+} = lazily(() => import("../pages"));
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +60,16 @@ export const router = createBrowserRouter([
           <GuardUser>
             <Suspense fallback={<LazyLoading />}>
               <DeliveryPage />
+            </Suspense>
+          </GuardUser>
+        ),
+      },
+      {
+        path: "/product/add",
+        element: (
+          <GuardUser>
+            <Suspense fallback={<LazyLoading />}>
+              <AddProductPage />
             </Suspense>
           </GuardUser>
         ),

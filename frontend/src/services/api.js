@@ -46,3 +46,8 @@ export const finishDelivery = async (delivery_id) => {
   const { data } = await api.get(`/delivery/${delivery_id}/finish`);
   return data;
 };
+
+export const createProduct = async (payload) => {
+  const { data } = await api.post("/products", payload);
+  return data;
+};

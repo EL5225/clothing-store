@@ -1,6 +1,5 @@
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { FaShoppingCart, FaTruck } from "react-icons/fa";
-import { TiMessages } from "react-icons/ti";
 import { MdOutlineLogout, MdLogin } from "react-icons/md";
 import { Fragment, useMemo, useState } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -9,6 +8,7 @@ import { GiArchiveRegister } from "react-icons/gi";
 import { Link } from "react-router-dom";
 import { useUserMe } from "../services/hooks";
 import { FaAngleDoubleRight } from "react-icons/fa";
+import { MdAddToPhotos } from "react-icons/md";
 
 export const Sidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -38,16 +38,14 @@ export const Sidebar = () => {
       icon: <FaTruck className="text-3xl" />,
       href: "/delivery",
     },
+    {
+      title: "Add Product",
+      icon: <MdAddToPhotos className="text-3xl" />,
+      href: "/product/add",
+    },
   ];
 
   const contentSidebarTwo = [
-    {
-      title: "Messages",
-      icon: <TiMessages className="text-3xl" />,
-      onClick: () => {
-        alert("Feature coming soon...");
-      },
-    },
     {
       title: "Logout",
       icon: <MdOutlineLogout className="text-3xl" />,
