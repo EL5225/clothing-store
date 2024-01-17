@@ -9,7 +9,7 @@ export const DeliveryPage = () => {
     return data?.data;
   }, [data?.data]);
 
-  const { mutate } = useFinishDelivery();
+  const { mutate, status } = useFinishDelivery();
 
   return (
     <section className="w-full h-full flex flex-col items-center md:items-start px-4 lg:px-24 py-10 overflow-y-auto gap-8">
@@ -28,6 +28,7 @@ export const DeliveryPage = () => {
             date={delivery?.created_at}
             status={delivery?.status}
             products={delivery?.products}
+            loadingStatus={status}
             onFinish={() => {
               mutate(delivery?.id, {
                 onSuccess: () => {

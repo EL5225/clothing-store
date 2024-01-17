@@ -2,8 +2,15 @@ import { FaCheck } from "react-icons/fa";
 import { formatDate } from "../utils/helpers";
 import { FaTruckLoading } from "react-icons/fa";
 import { FaTruckFast } from "react-icons/fa6";
+import { Spinner } from "./loadings";
 
-export const DeliveryCard = ({ date, status, products, onFinish }) => {
+export const DeliveryCard = ({
+  date,
+  status,
+  products,
+  onFinish,
+  loadingStatus,
+}) => {
   let total_price = 0;
 
   products?.map((product) => {
@@ -44,8 +51,13 @@ export const DeliveryCard = ({ date, status, products, onFinish }) => {
       ) : (
         <button
           onClick={onFinish}
+          disabled={loadingStatus === "pending"}
           className="md:absolute py-2 px-4 bg-green-600 rounded-md text-white hover:bg-green-700 flex items-center justify-center right-8">
-          Selesaikan
+          {loadingStatus === "pending" ? (
+            <Spinner width="w-5" height="h-5" />
+          ) : (
+            "Selesaikan"
+          )}
         </button>
       )}
     </div>

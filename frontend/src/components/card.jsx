@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaCartPlus } from "react-icons/fa";
 import { FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
 import { useAddToCart } from "../services/hooks";
+import { Spinner } from "./loadings";
 
 export const Card = ({ name, price, stock, image, id }) => {
   const [number, setNumber] = useState(0);
@@ -88,7 +89,11 @@ export const Card = ({ name, price, stock, image, id }) => {
         onClick={handleAddToCart}
         disabled={number === 0 || status === "pending"}
         className="flex items-center group justify-center py-2 bg-brown hover:bg-opacity-90 rounded-md disabled:cursor-not-allowed disabled:bg-opacity-50 disabled:bg-gray-400 duration-200">
-        <FaCartPlus className="text-white text-2xl group-disabled:text-gray-100" />
+        {status === "pending" ? (
+          <Spinner width="w-6" height="h-6" />
+        ) : (
+          <FaCartPlus className="text-white text-2xl group-disabled:text-gray-100" />
+        )}
       </button>
     </div>
   );
