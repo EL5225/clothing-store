@@ -124,9 +124,9 @@ const updateProduct = async (req, res, next) => {
                   id,
                 },
                 data: {
-                  name: name ? name : product.name,
-                  amount: product ? product.amount : Number(amount),
-                  price: product ? product.price : Number(price),
+                  name: name ? name : product?.name,
+                  amount: amount ? Number(amount) : product?.amount,
+                  price: price ? Number(price) : product?.price,
                 },
               });
 
@@ -143,8 +143,8 @@ const updateProduct = async (req, res, next) => {
             },
             data: {
               name: name ? name : product.name,
-              amount: product ? product.amount : Number(amount),
-              price: product ? product.price : Number(price),
+              amount: amount ? Number(amount) : product?.amount,
+              price: price ? Number(price) : product?.price,
               image: result?.secure_url,
             },
           });
@@ -227,9 +227,66 @@ const deleteProductFromCart = async (req, res, next) => {
   }
 };
 
+const deleteProductById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const product = await prisma.products.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    await prisma.products.delete({
+      where: {
+        id,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Delete product success",
+      data: product,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getProductById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await prisma.products.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Get product success",
+      data: product,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createProduct,
   getAllProducts,
   deleteProductFromCart,
   updateProduct,
+  deleteProductById,
+  getProductById,
 };

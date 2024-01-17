@@ -2,6 +2,7 @@ import { Fragment, useMemo, useState } from "react";
 import { useUpdateProfile, useUserMe } from "../../services/hooks";
 import { TextField, Button } from "../../components";
 import { FaPen } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 export const ProfilePage = () => {
   const [avatar, setAvatar] = useState(null);
@@ -33,8 +34,6 @@ export const ProfilePage = () => {
     try {
       e.preventDefault();
 
-      console.log({ ...profile, avatar });
-
       mutate(
         {
           ...profile,
@@ -44,10 +43,20 @@ export const ProfilePage = () => {
           onSuccess: () => {
             setIsEdit(false);
             refetch();
+            Swal.fire({
+              title: "Update profile berhasil!",
+              icon: "success",
+              showConfirmButton: false,
+            });
           },
           onError: (err) => {
             Promise.reject(err);
-            return alert(err?.response?.data?.message);
+            return Swal.fire({
+              title: "Update profile gagal!",
+              icon: "error",
+              text: err?.response?.data?.message,
+              showConfirmButton: false,
+            });
           },
         }
       );

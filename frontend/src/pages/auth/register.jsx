@@ -3,6 +3,7 @@ import { TextField } from "../../components";
 import { Button } from "../../components/button";
 import { useState } from "react";
 import { useRegister } from "./hooks";
+import Swal from "sweetalert2";
 
 export const Register = () => {
   const [registerData, setRegisterData] = useState({
@@ -24,6 +25,11 @@ export const Register = () => {
         {
           onSuccess: () => {
             navigate("/auth/login");
+            Swal.fire({
+              title: "Login berhasil",
+              icon: "success",
+              showConfirmButton: false,
+            });
           },
         },
         {

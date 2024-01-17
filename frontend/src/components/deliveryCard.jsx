@@ -32,11 +32,13 @@ export const DeliveryCard = ({
         </span>
       </div>
 
-      <div className="flex flex-col justify-center h-full gap-1 py-2">
+      <div className="flex w-[30%] flex-col justify-center h-full gap-1 py-2">
         <h3 className="font-semibold mb-1">Products</h3>
         {products?.map((product, i) => (
           <span key={i} className="text-xs font-medium">
-            {product?.products?.[0]?.name} x ({product?.amount})
+            {product?.products?.[0]?.name ||
+              "Product tidak ada atau sudah dihapus"}{" "}
+            x ({product?.amount})
           </span>
         ))}
         <span className="text-sm font-medium mt-1">

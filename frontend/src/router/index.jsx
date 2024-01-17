@@ -14,6 +14,8 @@ const {
   CartPage,
   DeliveryPage,
   AddProductPage,
+  EditProductPage,
+  EditProduct,
 } = lazily(() => import("../pages"));
 
 export const router = createBrowserRouter([
@@ -31,6 +33,14 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<LazyLoading />}>
             <LandingPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "edit-products",
+        element: (
+          <Suspense fallback={<LazyLoading />}>
+            <EditProductPage />
           </Suspense>
         ),
       },
@@ -70,6 +80,16 @@ export const router = createBrowserRouter([
           <GuardUser>
             <Suspense fallback={<LazyLoading />}>
               <AddProductPage />
+            </Suspense>
+          </GuardUser>
+        ),
+      },
+      {
+        path: "/product/edit/:id",
+        element: (
+          <GuardUser>
+            <Suspense fallback={<LazyLoading />}>
+              <EditProduct />
             </Suspense>
           </GuardUser>
         ),

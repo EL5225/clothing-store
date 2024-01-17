@@ -4,6 +4,7 @@ import { Button } from "../../components/button";
 import { useState } from "react";
 import { useLogin } from "./hooks";
 import { setToken } from "../../utils/token";
+import Swal from "sweetalert2";
 
 export const Login = () => {
   const [loginData, setLoginData] = useState({
@@ -24,6 +25,11 @@ export const Login = () => {
           const token = res?.token;
           setToken(token);
           navigate("/");
+          Swal.fire({
+            title: "Register berhasil",
+            icon: "success",
+            showConfirmButton: false,
+          });
         },
         onError: (err) => {
           Promise.reject(err);

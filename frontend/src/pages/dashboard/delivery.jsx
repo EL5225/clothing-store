@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useFinishDelivery, useGetDeliveries } from "../../services/hooks";
 import { DeliveryCard } from "../../components/deliveryCard";
+import Swal from "sweetalert2";
 
 export const DeliveryPage = () => {
   const { data, refetch } = useGetDeliveries();
@@ -30,15 +31,33 @@ export const DeliveryPage = () => {
             products={delivery?.products}
             loadingStatus={status}
             onFinish={() => {
-              mutate(delivery?.id, {
-                onSuccess: () => {
-                  refetch();
-                  return alert("Pengiriman selesai");
-                },
-                onError: (err) => {
-                  Promise.reject(err);
-                  alert("Gagal mengirimkan pengiriman");
-                },
+              Swal.fire({
+                title: "Selesaikan pengiriman?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Ya",
+                cancelButtonText: "Tidak",
+              }).then((res) => {
+                if (res.isConfirmed) {
+                  mutate(delivery?.id, {
+                    onSuccess: () => {
+                      refetch();
+                      return Swal.fire({
+                        title: "Pengiriman selesai",
+                        icon: "success",
+                        confirmButtonText: "Ok",
+                      });
+                    },
+                    onError: (err) => {
+                      Promise.reject(err);
+                      return Swal.fire({
+                        title: "Gagal menyelesaikan pengiriman",
+                        icon: "error",
+                        confirmButtonText: "Ok",
+                      });
+                    },
+                  });
+                }
               });
             }}
           />

@@ -1,19 +1,29 @@
-import { useState } from "react";
-import { useCreateProduct } from "../../services/hooks";
+import { useEffect, useMemo, useState } from "react";
+import { useGetProductById, useUpdateProduct } from "../../services/hooks";
 import { Button, TextField } from "../../components";
 import { FaPen } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { useNavigate, useParams } from "react-router-dom";
 
-export const AddProductPage = () => {
+export const EditProduct = () => {
   const [image, setImage] = useState(null);
   const [editImage, setEditImage] = useState(null);
+
+  const { id } = useParams();
+
+  const { data, refetch } = useGetProductById(id);
+
+  const product = useMemo(() => {
+    return data?.data;
+  }, [data?.data]);
+
   const [products, setProducts] = useState({
-    name: "",
-    amount: 0,
-    price: 0,
+    name: product?.name,
+    amount: product?.amount,
+    price: product?.price,
   });
 
-  const { mutate, status } = useCreateProduct();
+  const { mutate, status } = useUpdateProduct(id);
 
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -21,6 +31,8 @@ export const AddProductPage = () => {
     setEditImage(url);
     setImage(file);
   };
+
+  const navigate = useNavigate();
 
   const handleEdit = (e) => {
     try {
@@ -41,16 +53,18 @@ export const AddProductPage = () => {
               price: 0,
             });
             setEditImage(null);
-            return Swal.fire({
-              title: "Berhasil menambah product",
+            refetch();
+            Swal.fire({
+              title: "Berhasil edit product",
               icon: "success",
               showConfirmButton: false,
             });
+            navigate("/");
           },
           onError: (err) => {
             Promise.reject(err);
             return Swal.fire({
-              title: "Gagal menambah product",
+              title: "Gagal edit product",
               icon: "error",
               showConfirmButton: false,
             });
@@ -61,16 +75,25 @@ export const AddProductPage = () => {
       Promise.reject(error);
     }
   };
+
+  useEffect(() => {
+    setProducts({
+      name: product?.name,
+      amount: product?.amount,
+      price: product?.price,
+    });
+  }, [product]);
+
   return (
     <section className="w-full h-full flex flex-col items-center md:items-start md:px-24 py-10 overflow-y-auto gap-8">
-      <h1 className="text-3xl font-bold">Tambah Product</h1>
+      <h1 className="text-3xl font-bold">Edit Product</h1>
 
       <div className="relative flex flex-col">
         <label
           htmlFor="image"
           className="relative w-[200px] h-[200px] rounded-full cursor-pointer">
           <img
-            src={editImage || "/imageupload.png"}
+            src={editImage || product?.image}
             alt="avatar"
             className="w-[200px] h-[200px] rounded-md"
           />
@@ -82,11 +105,10 @@ export const AddProductPage = () => {
           className="appearance-none hidden"
           onChange={handleFile}
         />
-        {editImage && (
-          <div className="absolute rounded-md w-[200px] h-[200px] flex justify-center items-center bg-black bg-opacity-40 pointer-events-none">
-            <FaPen className="text-xl text-white" />
-          </div>
-        )}
+
+        <div className="absolute rounded-md w-[200px] h-[200px] flex justify-center items-center bg-black bg-opacity-40 pointer-events-none">
+          <FaPen className="text-xl text-white" />
+        </div>
       </div>
 
       <form
@@ -127,7 +149,7 @@ export const AddProductPage = () => {
         />
 
         <Button type="submit" loading={status === "pending"}>
-          Tambah
+          Edit
         </Button>
       </form>
     </section>

@@ -47,7 +47,22 @@ export const finishDelivery = async (delivery_id) => {
   return data;
 };
 
+export const getProductById = async (product_id) => {
+  const { data } = await api.get(`/products/${product_id}`);
+  return data;
+};
+
 export const createProduct = async (payload) => {
   const { data } = await api.post("/products", payload);
+  return data;
+};
+
+export const updateProduct = async (product_id, payload) => {
+  const { data } = await api.patch(`/products/${product_id}`, payload);
+  return data;
+};
+
+export const deleteProduct = async (product_id) => {
+  const { data } = await api.delete(`/products/${product_id}`);
   return data;
 };

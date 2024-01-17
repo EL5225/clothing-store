@@ -11,6 +11,8 @@ const {
   getAllProducts,
   deleteProductFromCart,
   updateProduct,
+  deleteProductById,
+  getProductById,
 } = require("../controllers/product.controller");
 const { imageUpload } = require("../libs/multer");
 const {
@@ -47,6 +49,7 @@ router.patch(
 
 // Products
 router.get("/products", getAllProducts);
+router.get("/products/:id", getProductById);
 router.post(
   "/products",
   authorizationHeader,
@@ -59,6 +62,7 @@ router.patch(
   imageUpload.single("image"),
   updateProduct
 );
+router.delete("/products/:id", authorizationHeader, deleteProductById);
 
 // Carts
 router.get("/carts", authorizationHeader, getCart);

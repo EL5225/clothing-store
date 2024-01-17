@@ -3,12 +3,15 @@ import {
   addToCart,
   checkoutCart,
   createProduct,
+  deleteProduct,
   deleteProductFromCart,
   finishDelivery,
   getCarts,
   getDeliveries,
+  getProductById,
   getProducts,
   getUserMe,
+  updateProduct,
   updateProfile,
 } from "./api";
 
@@ -99,5 +102,34 @@ export const useCreateProduct = () => {
       });
       await createProduct(formData);
     },
+  });
+};
+
+export const useUpdateProduct = (product_id) => {
+  return useMutation({
+    mutationKey: ["updateProduct"],
+    mutationFn: async (payload) => {
+      const formData = new FormData();
+      Object.entries(payload).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      await updateProduct(product_id, formData);
+    },
+  });
+};
+
+export const useDeleteProduct = () => {
+  return useMutation({
+    mutationKey: ["deleteProduct"],
+    mutationFn: async (product_id) => {
+      await deleteProduct(product_id);
+    },
+  });
+};
+
+export const useGetProductById = (product_id) => {
+  return useQuery({
+    queryKey: ["productById", product_id],
+    queryFn: async () => getProductById(product_id),
   });
 };

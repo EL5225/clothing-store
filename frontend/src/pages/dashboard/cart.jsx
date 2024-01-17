@@ -5,6 +5,7 @@ import {
   useGetCarts,
 } from "../../services/hooks";
 import { CartCard, Button, Spinner } from "../../components";
+import Swal from "sweetalert2";
 
 export const CartPage = () => {
   const { data, isLoading, refetch } = useGetCarts();
@@ -41,14 +42,32 @@ export const CartPage = () => {
             amount={cart?.amount}
             total={cart?.total_price}
             onRemove={() => {
-              deleteCart(cart?.product_id, {
-                onSuccess: () => {
-                  refetch();
-                },
-                onError: (err) => {
-                  Promise.reject(err);
-                  return alert("Gagal menghapus product dari keranjang");
-                },
+              Swal.fire({
+                title: "Menghapus product dari Cart?",
+                icon: "question",
+                showDenyButton: true,
+                denyButtonText: "Tidak!",
+                showConfirmButton: true,
+                confirmButtonText: "Iya!",
+              }).then((res) => {
+                if (res.isConfirmed) {
+                  deleteCart(cart?.product_id, {
+                    onSuccess: () => {
+                      Swal.fire({
+                        title: "Product berhasil dihapus dari Cart!",
+                        icon: "success",
+                      });
+                      refetch();
+                    },
+                    onError: (err) => {
+                      Promise.reject(err);
+                      return Swal.fire({
+                        title: "Gagal menghapus product dari Cart",
+                        icon: "error",
+                      });
+                    },
+                  });
+                }
               });
             }}
           />
@@ -67,11 +86,20 @@ export const CartPage = () => {
             checkoutCart(null, {
               onSuccess: () => {
                 refetch();
-                return alert("Checkout Berhasil");
+                return Swal.fire({
+                  title: "Checkout berhasil",
+                  text: "Selahkan cek menu Delivery untuk informasi pengiriman",
+                  icon: "success",
+                  showConfirmButton: false,
+                });
               },
               onError: (err) => {
                 Promise.reject(err);
-                return alert("Gagal checkout");
+                return Swal.fire({
+                  title: "Checkout gagal",
+                  icon: "error",
+                  showConfirmButton: false,
+                });
               },
             });
           }}>

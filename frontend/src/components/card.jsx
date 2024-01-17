@@ -1,13 +1,21 @@
 import { useState } from "react";
-import { FaCartPlus } from "react-icons/fa";
-import { FaCirclePlus, FaCircleMinus } from "react-icons/fa6";
-import { useAddToCart } from "../services/hooks";
+import { FaCartPlus, FaEdit } from "react-icons/fa";
+import { FaCirclePlus, FaCircleMinus, FaTrash } from "react-icons/fa6";
+import { useAddToCart, useDeleteProduct } from "../services/hooks";
 import { Spinner } from "./loadings";
+import { getToken } from "../utils/token";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
-export const Card = ({ name, price, stock, image, id }) => {
+export const Card = ({ name, price, stock, image, id, isEdit, refetch }) => {
   const [number, setNumber] = useState(0);
 
-  const { mutate, status } = useAddToCart(id);
+  const { mutate: addToCart, status: addToCartStatus } = useAddToCart(id);
+  const { mutate: deleteProduct, status: deleteStatus } = useDeleteProduct();
+
+  const token = getToken();
+
+  const navigate = useNavigate();
 
   const handleMinus = () => {
     if (number > 0) {
@@ -28,18 +36,67 @@ export const Card = ({ name, price, stock, image, id }) => {
   const handleAddToCart = (e) => {
     try {
       e.preventDefault();
-      mutate(
+
+      if (!token) {
+        return Swal.fire({
+          title: "Anda harus login terlebih dahulu",
+          icon: "info",
+        });
+      }
+
+      addToCart(
         { amount: number },
         {
           onSuccess: () => {
             setNumber(0);
-            return alert("Product berhasil ditambahkan ke keranjang");
+            Swal.fire({
+              title: "Produk ditambahkan ke Cart",
+              icon: "success",
+            });
           },
           onError: (err) => {
             Promise.reject(err);
           },
         }
       );
+    } catch (error) {
+      Promise.reject(error);
+    }
+  };
+
+  const handleEdit = () => {
+    navigate(`/product/edit/${id}`);
+  };
+
+  const handleDelete = () => {
+    try {
+      Swal.fire({
+        title: "Menghapus product?",
+        icon: "question",
+        showDenyButton: true,
+        denyButtonText: "Tidak!",
+        showConfirmButton: true,
+        confirmButtonText: "Iya!",
+      }).then((result) => {
+        if (result?.isConfirmed) {
+          deleteProduct(id, {
+            onSuccess: () => {
+              refetch();
+              Swal.fire({
+                title: "Berhasil hapus product",
+                icon: "success",
+              });
+            },
+            onError: (err) => {
+              Promise.reject(err);
+              Swal.fire({
+                title: "Gagal menghapus product",
+                icon: "error",
+              });
+            },
+          });
+        }
+      });
     } catch (error) {
       Promise.reject(error);
     }
@@ -66,35 +123,58 @@ export const Card = ({ name, price, stock, image, id }) => {
           </div>
         </div>
       </div>
+      {!isEdit && (
+        <div className="flex items-center justify-between px-2 py-0.5 bg-brown rounded-full">
+          <button
+            onClick={handleMinus}
+            className={`flex items-center justify-center rounded-full ${
+              number === 0 && "cursor-not-allowed"
+            }`}>
+            <FaCircleMinus className="rounded-full text-white" />
+          </button>
+          <span className="text-white">{number}</span>
+          <button
+            onClick={handleAdd}
+            className={`flex items-center justify-center rounded-full ${
+              number >= stock && "cursor-not-allowed"
+            }`}>
+            <FaCirclePlus className="rounded-full text-white" />
+          </button>
+        </div>
+      )}
 
-      <div className="flex items-center justify-between px-2 py-0.5 bg-brown rounded-full">
-        <button
-          onClick={handleMinus}
-          className={`flex items-center justify-center rounded-full ${
-            number === 0 && "cursor-not-allowed"
-          }`}>
-          <FaCircleMinus className="rounded-full text-white" />
-        </button>
-        <span className="text-white">{number}</span>
-        <button
-          onClick={handleAdd}
-          className={`flex items-center justify-center rounded-full ${
-            number >= stock && "cursor-not-allowed"
-          }`}>
-          <FaCirclePlus className="rounded-full text-white" />
-        </button>
-      </div>
+      {isEdit && (
+        <div className="flex flex-col justify-center gap-2">
+          <button
+            onClick={handleEdit}
+            className="flex items-center group justify-center py-2 hover:bg-opacity-90 rounded-md disabled:cursor-not-allowed disabled:bg-opacity-50 disabled:bg-gray-400 duration-200 bg-green-500">
+            <FaEdit className="text-white text-2xl group-disabled:text-gray-100" />
+          </button>
 
-      <button
-        onClick={handleAddToCart}
-        disabled={number === 0 || status === "pending"}
-        className="flex items-center group justify-center py-2 bg-brown hover:bg-opacity-90 rounded-md disabled:cursor-not-allowed disabled:bg-opacity-50 disabled:bg-gray-400 duration-200">
-        {status === "pending" ? (
-          <Spinner width="w-6" height="h-6" />
-        ) : (
-          <FaCartPlus className="text-white text-2xl group-disabled:text-gray-100" />
-        )}
-      </button>
+          <button
+            onClick={handleDelete}
+            className="flex items-center group justify-center py-2 hover:bg-opacity-90 rounded-md disabled:cursor-not-allowed disabled:bg-opacity-50 disabled:bg-gray-400 duration-200 bg-red-500">
+            {deleteStatus === "pending" ? (
+              <Spinner width="w-6" height="h-6" />
+            ) : (
+              <FaTrash className="text-white text-2xl group-disabled:text-gray-100" />
+            )}
+          </button>
+        </div>
+      )}
+
+      {!isEdit && (
+        <button
+          onClick={handleAddToCart}
+          disabled={number === 0 || addToCartStatus === "pending"}
+          className={`flex items-center group justify-center py-2 hover:bg-opacity-90 rounded-md disabled:cursor-not-allowed disabled:bg-opacity-50 disabled:bg-gray-400 duration-200 bg-brown`}>
+          {addToCartStatus === "pending" ? (
+            <Spinner width="w-6" height="h-6" />
+          ) : (
+            <FaCartPlus className="text-white text-2xl group-disabled:text-gray-100" />
+          )}
+        </button>
+      )}
     </div>
   );
 };

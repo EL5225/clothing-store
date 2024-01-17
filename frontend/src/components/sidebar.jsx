@@ -7,8 +7,9 @@ import { getToken, removeToken } from "../utils/token";
 import { GiArchiveRegister } from "react-icons/gi";
 import { Link } from "react-router-dom";
 import { useUserMe } from "../services/hooks";
-import { FaAngleDoubleRight } from "react-icons/fa";
+import { FaAngleDoubleRight, FaEdit } from "react-icons/fa";
 import { MdAddToPhotos } from "react-icons/md";
+import Swal from "sweetalert2";
 
 export const Sidebar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -43,6 +44,11 @@ export const Sidebar = () => {
       icon: <MdAddToPhotos className="text-3xl" />,
       href: "/product/add",
     },
+    {
+      title: "Edit Products",
+      icon: <FaEdit className="text-3xl" />,
+      href: "/edit-products",
+    },
   ];
 
   const contentSidebarTwo = [
@@ -50,8 +56,27 @@ export const Sidebar = () => {
       title: "Logout",
       icon: <MdOutlineLogout className="text-3xl" />,
       onClick: () => {
-        removeToken();
-        window.location.reload();
+        Swal.fire({
+          title: "Yakin ingin keluar?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          cancelButtonText: "Tidak!",
+          confirmButtonText: "Iya!",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            removeToken();
+            Swal.fire({
+              title: "Logout berhasil!",
+              icon: "success",
+            }).then((res) => {
+              if (res.isConfirmed) {
+                window.location.reload();
+              }
+            });
+          }
+        });
       },
     },
   ];
