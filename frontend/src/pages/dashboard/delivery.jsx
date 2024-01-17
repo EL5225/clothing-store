@@ -2,9 +2,10 @@ import { useMemo } from "react";
 import { useFinishDelivery, useGetDeliveries } from "../../services/hooks";
 import { DeliveryCard } from "../../components/deliveryCard";
 import Swal from "sweetalert2";
+import { Spinner } from "../../components";
 
 export const DeliveryPage = () => {
-  const { data, refetch } = useGetDeliveries();
+  const { data, refetch, isLoading } = useGetDeliveries();
 
   const deliveries = useMemo(() => {
     return data?.data;
@@ -17,6 +18,12 @@ export const DeliveryPage = () => {
       <h1 className="text-3xl font-bold">Delivery</h1>
 
       <div className="flex flex-col w-full py-4 gap-4">
+        {isLoading && (
+          <div className="flex items-center justify-center w-[90%] xl:w-[70%] px-2 py-8 bg-white rounded-md border border-black text-lg font-semibold">
+            <Spinner />
+          </div>
+        )}
+
         {deliveries?.length === 0 && (
           <div className="flex items-center justify-center w-[90%] xl:w-[70%] px-2 py-8 bg-white rounded-md border border-black text-lg font-semibold">
             Belum ada pengiriman
